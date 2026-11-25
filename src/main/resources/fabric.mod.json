@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "workernpc",
+  "version": "${version}",
+  "name": "WorkerNPC",
+  "description": "A Minecraft mod that adds controllable NPC workers.",
+  "authors": [
+    "Dino"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.workernpc.WorkerNPC"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}
