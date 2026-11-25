@@ -1,5 +1,7 @@
+
 package com.workernpc;
 
+import com.workernpc.entity.ModEntities;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,9 @@ public class WorkerNPC implements ModInitializer {
     @Override
     public void onInitialize() {
 
-        LOGGER.info("WorkerNPC berhasil dimuat!");
+        ModEntities.registerAttributes();
 
+        LOGGER.info("WorkerNPC berhasil dimuat!");
+        LOGGER.info("Worker Entity berhasil didaftarkan!");
     }
 }
