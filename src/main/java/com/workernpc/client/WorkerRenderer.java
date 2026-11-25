@@ -20,7 +20,7 @@ public class WorkerRenderer extends MobEntityRenderer<
         super(
                 context,
                 new BipedEntityModel<>(
-                        context.getPart(EntityModelLayers.BIPED)
+                        context.getPart(EntityModelLayers.PLAYER)
                 ),
                 0.5f
         );
