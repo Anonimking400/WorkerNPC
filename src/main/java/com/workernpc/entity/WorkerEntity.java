@@ -6,6 +6,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class WorkerEntity extends PathAwareEntity {
@@ -15,6 +16,9 @@ public class WorkerEntity extends PathAwareEntity {
             World world
     ) {
         super(entityType, world);
+
+        setCustomName(Text.literal("Worker"));
+        setCustomNameVisible(true);
     }
 
     public static DefaultAttributeContainer.Builder createWorkerAttributes() {
@@ -25,4 +29,3 @@ public class WorkerEntity extends PathAwareEntity {
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
     }
 }
-
