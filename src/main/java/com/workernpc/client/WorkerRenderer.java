@@ -14,7 +14,7 @@ public class WorkerRenderer extends MobEntityRenderer<
 > {
 
     private static final Identifier TEXTURE =
-            new Identifier("minecraft", "textures/entity/steve.png");
+        new Identifier("minecraft", "textures/entity/player/wide/steve.png");
 
     public WorkerRenderer(EntityRendererFactory.Context context) {
         super(
