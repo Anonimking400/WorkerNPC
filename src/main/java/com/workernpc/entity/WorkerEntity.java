@@ -1,15 +1,21 @@
 
 package com.workernpc.entity;
 
+import java.util.UUID;
+
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class WorkerEntity extends PathAwareEntity {
+
+    private UUID followingPlayer;
 
     public WorkerEntity(
             EntityType<? extends PathAwareEntity> entityType,
@@ -19,6 +25,43 @@ public class WorkerEntity extends PathAwareEntity {
 
         setCustomName(Text.literal("Worker"));
         setCustomNameVisible(true);
+    }
+
+    public void setFollowing(PlayerEntity player) {
+        this.followingPlayer = player.getUuid();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (world.isClient || followingPlayer == null) {
+            return;
+        }
+
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return;
+        }
+
+        PlayerEntity target =
+                serverWorld.getPlayerByUuid(followingPlayer);
+
+        if (target == null || !target.isAlive()) {
+            followingPlayer = null;
+            getNavigation().stop();
+            return;
+        }
+
+        double distance = squaredDistanceTo(target);
+
+        if (distance <= 2.5 * 2.5) {
+            getNavigation().stop();
+            return;
+        }
+
+        if (age % 10 == 0) {
+            getNavigation().startMovingTo(target, 1.1);
+        }
     }
 
     public static DefaultAttributeContainer.Builder createWorkerAttributes() {

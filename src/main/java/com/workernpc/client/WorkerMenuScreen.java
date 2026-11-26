@@ -1,17 +1,25 @@
 
 package com.workernpc.client;
 
+import com.workernpc.WorkerNetworking;
+
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
 public class WorkerMenuScreen extends Screen {
 
+    private final int workerEntityId;
     private String selectedAction = "Select an option";
 
-    public WorkerMenuScreen() {
+    public WorkerMenuScreen(int workerEntityId) {
         super(Text.literal("WORKER CONTROL"));
+        this.workerEntityId = workerEntityId;
     }
 
     @Override
@@ -26,7 +34,18 @@ public class WorkerMenuScreen extends Screen {
 
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Follow"),
-                button -> selectAction("Follow")
+                button -> {
+
+                    PacketByteBuf buf = PacketByteBufs.create();
+                    buf.writeVarInt(workerEntityId);
+
+                    ClientPlayNetworking.send(
+                            WorkerNetworking.FOLLOW_PACKET,
+                            buf
+                    );
+
+                    selectedAction = "Following player";
+                }
         ).dimensions(
                 centerX - buttonWidth - gap / 2,
                 startY,
@@ -117,7 +136,7 @@ public class WorkerMenuScreen extends Screen {
                 centerY - 85,
                 centerX + 120,
                 centerY + 125,
-                0xDD202020
+                0xAA202020
         );
 
         context.drawCenteredTextWithShadow(
@@ -152,4 +171,3 @@ public class WorkerMenuScreen extends Screen {
         return false;
     }
 }
-

@@ -24,11 +24,11 @@ public class WorkerNPCClient implements ClientModInitializer {
         UseEntityCallback.EVENT.register(
                 (player, world, hand, entity, hitResult) -> {
 
-                    if (entity instanceof WorkerEntity) {
+                    if (entity instanceof WorkerEntity worker) {
 
                         if (world.isClient) {
                             MinecraftClient.getInstance().setScreen(
-                                    new WorkerMenuScreen()
+                                    new WorkerMenuScreen(worker.getId())
                             );
                         }
 

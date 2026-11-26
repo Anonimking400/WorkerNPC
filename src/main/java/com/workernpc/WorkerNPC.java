@@ -3,6 +3,7 @@ package com.workernpc;
 
 import com.workernpc.entity.ModEntities;
 import com.workernpc.item.ModItems;
+
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,9 @@ public class WorkerNPC implements ModInitializer {
         ModEntities.registerAttributes();
         ModItems.registerItems();
 
+        WorkerNetworking.register();
+
         LOGGER.info("WorkerNPC berhasil dimuat!");
-        LOGGER.info("Worker Entity berhasil didaftarkan!");
-        LOGGER.info("Worker Spawn Egg berhasil didaftarkan!");
+        LOGGER.info("Worker Follow system berhasil didaftarkan!");
     }
 }
