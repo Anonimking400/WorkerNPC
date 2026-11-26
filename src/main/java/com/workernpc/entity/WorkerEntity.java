@@ -31,6 +31,11 @@ public class WorkerEntity extends PathAwareEntity {
         this.followingPlayer = player.getUuid();
     }
 
+    public void setStaying() {
+    this.followingPlayer = null;
+    getNavigation().stop();
+    }
+
     @Override
     public void tick() {
         super.tick();

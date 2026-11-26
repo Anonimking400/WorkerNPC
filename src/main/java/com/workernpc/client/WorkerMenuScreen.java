@@ -54,9 +54,20 @@ public class WorkerMenuScreen extends Screen {
         ).build());
 
         addDrawableChild(ButtonWidget.builder(
-                Text.literal("Stay"),
-                button -> selectAction("Stay")
-        ).dimensions(
+        Text.literal("Stay"),
+        button -> {
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeVarInt(workerEntityId);
+
+            ClientPlayNetworking.send(
+                    WorkerNetworking.STAY_PACKET,
+                    buf
+            );
+
+            selectedAction = "Worker staying";
+        }
+).dimensions(
                 centerX + gap / 2,
                 startY,
                 buttonWidth,

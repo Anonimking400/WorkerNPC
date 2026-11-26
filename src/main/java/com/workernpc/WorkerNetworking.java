@@ -12,8 +12,12 @@ public class WorkerNetworking {
     public static final Identifier FOLLOW_PACKET =
             new Identifier(WorkerNPC.MOD_ID, "follow");
 
+    public static final Identifier STAY_PACKET =
+            new Identifier(WorkerNPC.MOD_ID, "stay");
+
     public static void register() {
 
+        // Perintah Follow
         ServerPlayNetworking.registerGlobalReceiver(
                 FOLLOW_PACKET,
                 (server, player, handler, buf, responseSender) -> {
@@ -21,7 +25,6 @@ public class WorkerNetworking {
                     int entityId = buf.readVarInt();
 
                     server.execute(() -> {
-
                         Entity entity = player.getWorld()
                                 .getEntityById(entityId);
 
@@ -31,6 +34,23 @@ public class WorkerNetworking {
                     });
                 }
         );
+
+        // Perintah Stay
+        ServerPlayNetworking.registerGlobalReceiver(
+                STAY_PACKET,
+                (server, player, handler, buf, responseSender) -> {
+
+                    int entityId = buf.readVarInt();
+
+                    server.execute(() -> {
+                        Entity entity = player.getWorld()
+                                .getEntityById(entityId);
+
+                        if (entity instanceof WorkerEntity worker) {
+                            worker.setStaying();
+                        }
+                    });
+                }
+        );
     }
 }
-
