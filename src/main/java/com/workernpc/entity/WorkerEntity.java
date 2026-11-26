@@ -7,6 +7,7 @@ import com.workernpc.work.TreeDetector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -24,7 +25,6 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -175,7 +175,7 @@ public class WorkerEntity extends PathAwareEntity {
         );
     }
 
-    // Memasukkan hasil tebangan ke inventory Worker
+    // Mengumpulkan hasil tebangan ke inventory Worker
     private void collectLogDrops(List<ItemStack> drops, BlockPos pos) {
 
         for (ItemStack drop : drops) {
@@ -210,13 +210,18 @@ public class WorkerEntity extends PathAwareEntity {
                 }
             }
 
-            // Jika inventory penuh, jatuhkan sisanya
+            // Jika inventory penuh, jatuhkan sisa item ke tanah
             if (!remaining.isEmpty()) {
-                ItemScatterer.spawn(
+
+                ItemEntity itemEntity = new ItemEntity(
                         getWorld(),
-                        pos,
-                        remaining
+                        pos.getX() + 0.5,
+                        pos.getY() + 0.5,
+                        pos.getZ() + 0.5,
+                        remaining.copy()
                 );
+
+                getWorld().spawnEntity(itemEntity);
             }
         }
     }
@@ -301,7 +306,7 @@ public class WorkerEntity extends PathAwareEntity {
             return;
         }
 
-        // Tugas selesai: teleport ke pemilik
+        // Tugas selesai: kembali ke pemilik
         if (choppedTreeCount >= targetTreeCount) {
 
             ServerWorld serverWorld = (ServerWorld) getWorld();
