@@ -32,37 +32,37 @@ public class WorkerEntity extends PathAwareEntity {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+public void tick() {
+    super.tick();
 
-        if (world.isClient || followingPlayer == null) {
-            return;
-        }
-
-        if (!(world instanceof ServerWorld serverWorld)) {
-            return;
-        }
-
-        PlayerEntity target =
-                serverWorld.getPlayerByUuid(followingPlayer);
-
-        if (target == null || !target.isAlive()) {
-            followingPlayer = null;
-            getNavigation().stop();
-            return;
-        }
-
-        double distance = squaredDistanceTo(target);
-
-        if (distance <= 2.5 * 2.5) {
-            getNavigation().stop();
-            return;
-        }
-
-        if (age % 10 == 0) {
-            getNavigation().startMovingTo(target, 1.1);
-        }
+    if (getWorld().isClient || followingPlayer == null) {
+        return;
     }
+
+    if (!(getWorld() instanceof ServerWorld serverWorld)) {
+        return;
+    }
+
+    PlayerEntity target =
+            serverWorld.getPlayerByUuid(followingPlayer);
+
+    if (target == null || !target.isAlive()) {
+        followingPlayer = null;
+        getNavigation().stop();
+        return;
+    }
+
+    double distance = squaredDistanceTo(target);
+
+    if (distance <= 2.5 * 2.5) {
+        getNavigation().stop();
+        return;
+    }
+
+    if (age % 10 == 0) {
+        getNavigation().startMovingTo(target, 1.1);
+    }
+}
 
     public static DefaultAttributeContainer.Builder createWorkerAttributes() {
         return MobEntity.createMobAttributes()
