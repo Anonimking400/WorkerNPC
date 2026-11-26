@@ -54,14 +54,26 @@ public void tick() {
 
     double distance = squaredDistanceTo(target);
 
-    if (distance <= 2.5 * 2.5) {
-        getNavigation().stop();
-        return;
-    }
+// Berhenti jika sudah dekat dengan player
+if (distance <= 2.5 * 2.5) {
+    getNavigation().stop();
+    return;
+}
 
-    if (age % 10 == 0) {
-        getNavigation().startMovingTo(target, 1.1);
-    }
+// Teleport jika tertinggal terlalu jauh
+if (distance >= 32.0 * 32.0) {
+    double x = target.getX() + 1.5;
+    double y = target.getY();
+    double z = target.getZ() + 1.5;
+
+    teleport(x, y, z);
+    getNavigation().stop();
+    return;
+}
+
+// Berjalan mengikuti player
+if (age % 10 == 0) {
+    getNavigation().startMovingTo(target, 1.1);
 }
 
     public static DefaultAttributeContainer.Builder createWorkerAttributes() {
