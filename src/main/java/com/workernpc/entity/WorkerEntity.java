@@ -9,38 +9,20 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 
 public class WorkerEntity extends PathAwareEntity {
 
     private UUID followingPlayer;
 
     private final SimpleInventory workerInventory =
-        new SimpleInventory(18);
-    
-    public SimpleInventory getWorkerInventory() {
-    return workerInventory;}
-
-    public void openWorkerInventory(PlayerEntity player) {
-    if (!getWorld().isClient) {
-        player.openHandledScreen(
-                new SimpleNamedScreenHandlerFactory(
-                        (syncId, playerInventory, playerEntity) ->
-                                GenericContainerScreenHandler.createGeneric9x2(
-                                        syncId,
-                                        playerInventory,
-                                        workerInventory
-                                ),
-                        Text.literal("Worker Inventory")
-                )
-        );
-    }
-    }
+            new SimpleInventory(18);
 
     public WorkerEntity(
             EntityType<? extends PathAwareEntity> entityType,
@@ -52,13 +34,39 @@ public class WorkerEntity extends PathAwareEntity {
         setCustomNameVisible(true);
     }
 
+    // Inventory Worker
+    public SimpleInventory getWorkerInventory() {
+        return workerInventory;
+    }
+
+    // Membuka inventory Worker
+    public void openWorkerInventory(PlayerEntity player) {
+        if (!getWorld().isClient) {
+            player.openHandledScreen(
+                    new SimpleNamedScreenHandlerFactory(
+                            (syncId, playerInventory, playerEntity) ->
+                                    new GenericContainerScreenHandler(
+                                            ScreenHandlerType.GENERIC_9X2,
+                                            syncId,
+                                            playerInventory,
+                                            workerInventory,
+                                            2
+                                    ),
+                            Text.literal("Worker Inventory")
+                    )
+            );
+        }
+    }
+
+    // Perintah Follow
     public void setFollowing(PlayerEntity player) {
         this.followingPlayer = player.getUuid();
     }
 
+    // Perintah Stay
     public void setStaying() {
-    this.followingPlayer = null;
-    getNavigation().stop();
+        this.followingPlayer = null;
+        getNavigation().stop();
     }
 
     @Override
