@@ -12,10 +12,35 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 
 public class WorkerEntity extends PathAwareEntity {
 
     private UUID followingPlayer;
+
+    private final SimpleInventory workerInventory =
+        new SimpleInventory(18);
+    
+    public SimpleInventory getWorkerInventory() {
+    return workerInventory;}
+
+    public void openWorkerInventory(PlayerEntity player) {
+    if (!getWorld().isClient) {
+        player.openHandledScreen(
+                new SimpleNamedScreenHandlerFactory(
+                        (syncId, playerInventory, playerEntity) ->
+                                GenericContainerScreenHandler.createGeneric9x2(
+                                        syncId,
+                                        playerInventory,
+                                        workerInventory
+                                ),
+                        Text.literal("Worker Inventory")
+                )
+        );
+    }
+    }
 
     public WorkerEntity(
             EntityType<? extends PathAwareEntity> entityType,

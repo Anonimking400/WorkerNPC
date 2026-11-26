@@ -95,9 +95,20 @@ public class WorkerMenuScreen extends Screen {
         ).build());
 
         addDrawableChild(ButtonWidget.builder(
-                Text.literal("Inventory"),
-                button -> selectAction("Inventory")
-        ).dimensions(
+        Text.literal("Inventory"),
+        button -> {
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeVarInt(workerEntityId);
+
+            ClientPlayNetworking.send(
+                    WorkerNetworking.INVENTORY_PACKET,
+                    buf
+            );
+
+            close();
+        }
+).dimensions(
                 centerX - buttonWidth - gap / 2,
                 startY + 52,
                 buttonWidth,

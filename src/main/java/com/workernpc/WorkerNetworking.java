@@ -15,6 +15,9 @@ public class WorkerNetworking {
     public static final Identifier STAY_PACKET =
             new Identifier(WorkerNPC.MOD_ID, "stay");
 
+    public static final Identifier INVENTORY_PACKET =
+        new Identifier(WorkerNPC.MOD_ID, "inventory");
+
     public static void register() {
 
         // Perintah Follow
@@ -53,4 +56,22 @@ public class WorkerNetworking {
                 }
         );
     }
+
+          // Perintah membuka inventory Worker
+        ServerPlayNetworking.registerGlobalReceiver(
+        INVENTORY_PACKET,
+        (server, player, handler, buf, responseSender) -> {
+
+            int entityId = buf.readVarInt();
+
+            server.execute(() -> {
+                Entity entity = player.getWorld()
+                        .getEntityById(entityId);
+
+                if (entity instanceof WorkerEntity worker) {
+                    worker.openWorkerInventory(player);
+                }
+            });
+        }
+);
 }
