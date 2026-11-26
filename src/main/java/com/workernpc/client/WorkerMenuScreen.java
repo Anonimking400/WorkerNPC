@@ -3,8 +3,8 @@ package com.workernpc.client;
 
 import com.workernpc.WorkerNetworking;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,129 +15,79 @@ import net.minecraft.text.Text;
 public class WorkerMenuScreen extends Screen {
 
     private final int workerEntityId;
-    private String selectedAction = "Select an option";
 
     public WorkerMenuScreen(int workerEntityId) {
-        super(Text.literal("WORKER CONTROL"));
+        super(Text.literal("Worker Menu"));
         this.workerEntityId = workerEntityId;
     }
 
     @Override
     protected void init() {
 
-        int centerX = this.width / 2;
-        int startY = this.height / 2 - 45;
+        int centerX = width / 2;
+        int centerY = height / 2;
 
-        int buttonWidth = 100;
+        int buttonWidth = 120;
         int buttonHeight = 20;
-        int gap = 6;
+        int left = centerX - buttonWidth / 2;
 
+        // Follow
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Follow"),
-                button -> {
+                button -> sendPacket(WorkerNetworking.FOLLOW_PACKET)
+        ).dimensions(left, centerY - 75, buttonWidth, buttonHeight).build());
 
-                    PacketByteBuf buf = PacketByteBufs.create();
-                    buf.writeVarInt(workerEntityId);
-
-                    ClientPlayNetworking.send(
-                            WorkerNetworking.FOLLOW_PACKET,
-                            buf
-                    );
-
-                    selectedAction = "Following player";
-                }
-        ).dimensions(
-                centerX - buttonWidth - gap / 2,
-                startY,
-                buttonWidth,
-                buttonHeight
-        ).build());
-
+        // Stay
         addDrawableChild(ButtonWidget.builder(
-        Text.literal("Stay"),
-        button -> {
+                Text.literal("Stay"),
+                button -> sendPacket(WorkerNetworking.STAY_PACKET)
+        ).dimensions(left, centerY - 50, buttonWidth, buttonHeight).build());
 
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeVarInt(workerEntityId);
-
-            ClientPlayNetworking.send(
-                    WorkerNetworking.STAY_PACKET,
-                    buf
-            );
-
-            selectedAction = "Worker staying";
-        }
-).dimensions(
-                centerX + gap / 2,
-                startY,
-                buttonWidth,
-                buttonHeight
-        ).build());
-
+        // Guard
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Guard"),
-                button -> selectAction("Guard")
-        ).dimensions(
-                centerX - buttonWidth - gap / 2,
-                startY + 26,
-                buttonWidth,
-                buttonHeight
-        ).build());
+                button -> {}
+        ).dimensions(left, centerY - 25, buttonWidth, buttonHeight).build());
 
+        // Work
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Work"),
-                button -> selectAction("Work")
-        ).dimensions(
-                centerX + gap / 2,
-                startY + 26,
-                buttonWidth,
-                buttonHeight
-        ).build());
+                button -> {
+                    client.setScreen(
+                            new LumberjackScreen(workerEntityId)
+                    );
+                }
+        ).dimensions(left, centerY, buttonWidth, buttonHeight).build());
 
+        // Inventory
         addDrawableChild(ButtonWidget.builder(
-        Text.literal("Inventory"),
-        button -> {
+                Text.literal("Inventory"),
+                button -> {
+                    sendPacket(WorkerNetworking.INVENTORY_PACKET);
+                    close();
+                }
+        ).dimensions(left, centerY + 25, buttonWidth, buttonHeight).build());
 
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeVarInt(workerEntityId);
-
-            ClientPlayNetworking.send(
-                    WorkerNetworking.INVENTORY_PACKET,
-                    buf
-            );
-
-            close();
-        }
-).dimensions(
-                centerX - buttonWidth - gap / 2,
-                startY + 52,
-                buttonWidth,
-                buttonHeight
-        ).build());
-
+        // Settings
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Settings"),
-                button -> selectAction("Settings")
-        ).dimensions(
-                centerX + gap / 2,
-                startY + 52,
-                buttonWidth,
-                buttonHeight
-        ).build());
+                button -> {}
+        ).dimensions(left, centerY + 50, buttonWidth, buttonHeight).build());
 
+        // Close
         addDrawableChild(ButtonWidget.builder(
                 Text.literal("Close"),
                 button -> close()
-        ).dimensions(
-                centerX - 50,
-                startY + 82,
-                100,
-                buttonHeight
-        ).build());
+        ).dimensions(left, centerY + 75, buttonWidth, buttonHeight).build());
     }
 
-    private void selectAction(String action) {
-        selectedAction = action + " - Coming Soon";
+    private void sendPacket(net.minecraft.util.Identifier packet) {
+
+        PacketByteBuf buf = PacketByteBufs.create();
+
+        buf.writeVarInt(workerEntityId);
+
+        ClientPlayNetworking.send(packet, buf);
     }
 
     @Override
@@ -148,44 +98,28 @@ public class WorkerMenuScreen extends Screen {
             float delta
     ) {
 
-        this.renderBackground(context);
+        renderBackground(context);
 
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
+        int centerX = width / 2;
+        int centerY = height / 2;
 
         context.fill(
-                centerX - 120,
-                centerY - 85,
-                centerX + 120,
-                centerY + 125,
+                centerX - 85,
+                centerY - 100,
+                centerX + 85,
+                centerY + 100,
                 0xAA202020
         );
 
         context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                "WORKER CONTROL",
+                textRenderer,
+                "WORKER MENU",
                 centerX,
-                centerY - 76,
+                centerY - 90,
                 0xFFFFFF
         );
 
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                "Worker Management",
-                centerX,
-                centerY - 61,
-                0xAAAAAA
-        );
-
         super.render(context, mouseX, mouseY, delta);
-
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                selectedAction,
-                centerX,
-                centerY + 110,
-                0xFFFF55
-        );
     }
 
     @Override
